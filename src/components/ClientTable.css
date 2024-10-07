@@ -1,0 +1,6 @@
+/* src/components/ClientTable.css */
+.total-row {
+    font-weight: bold;
+    background-color: #f5f5f5; /* Couleur de fond pour la ligne totale */
+  }
+  

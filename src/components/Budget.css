@@ -1,0 +1,16 @@
+/* src/components/Budget.css */
+.budget-orange {
+    color: orange;
+    font-weight: bold;
+  }
+  
+  .budget-green {
+    color: green; /* Nouvelle couleur pour le budget entre 7000 et 10000 */
+    font-weight: bold;
+  }
+  
+  .budget-red {
+    color: red;
+    font-weight: bold;
+  }
+  

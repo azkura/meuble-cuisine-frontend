@@ -1,10 +1,47 @@
 /* src/App.css */
+
+/* Appliquer la police moderne à l'ensemble de l'application */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4f6f9;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+/* Global styling */
+h1 {
+  text-align: center;
+  color: #007bff;
+  margin: 20px 0;
+}
+
+/* Container for content */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling */
 table {
   width: 100%;
   border-collapse: collapse;
   margin: 20px 0;
-  font-size: 1em;
+  font-size: 16px;
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+table thead tr {
+  background-color: #007bff;
+  color: #ffffff;
   text-align: left;
+  font-weight: 600;
 }
 
 table th, table td {
@@ -12,134 +49,133 @@ table th, table td {
   border: 1px solid #ddd;
 }
 
-table thead {
-  background-color: #f4f4f4;
+table tbody tr {
+  border-bottom: 1px solid #dddddd;
+  transition: background-color 0.2s ease;
 }
 
-.client-summary {
-  margin-top: 20px;
-  font-size: 1.2em;
+table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
 }
 
-.filters {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 10px;
+table tbody tr:hover {
+  background-color: #e9f4ff;
 }
 
-select {
-  padding: 5px;
-  font-size: 1em;
+table tfoot tr {
+  background-color: #f1f1f1;
+  font-weight: bold;
 }
 
-
-/* src/App.css */
-.new-client-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-/* src/App.css */
-.new-client-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.new-client-form input,
-.new-client-form select,
-.new-client-form textarea {
-  padding: 10px;
-  font-size: 1em;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.new-client-form textarea {
-  resize: vertical;
-  height: 100px;
-}
-
+/* Button styling */
 button {
-  padding: 10px;
-  font-size: 1em;
-  border-radius: 5px;
+  padding: 10px 20px;
   border: none;
+  border-radius: 5px;
   background-color: #007bff;
-  color: white;
+  color: #fff;
+  font-size: 14px;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+  margin: 5px;
 }
 
 button:hover {
   background-color: #0056b3;
+  transform: scale(1.05);
 }
 
-.error {
-  color: red;
-  font-size: 0.9em;
-  margin-top: -10px;
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
-/* src/App.css */
-.sorting-controls {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+button.add-client-btn {
+  background-color: #28a745;
+  margin: 20px 0;
 }
 
-.sorting-controls select {
-  padding: 5px;
-  font-size: 1em;
+button.add-client-btn:hover {
+  background-color: #218838;
 }
 
-/* src/App.css */
-.modal {
+/* Input and select styling */
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: 'Poppins', sans-serif;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Modal styling */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
+  transition: opacity 0.3s ease;
 }
 
 .modal-content {
-  background-color: white;
+  background: #fff;
   padding: 20px;
-  border-radius: 5px;
-  width: 80%;
+  border-radius: 10px;
+  width: 90%;
   max-width: 500px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
 }
 
-button {
-  padding: 10px;
-  margin: 5px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
+.modal-body {
+  margin-bottom: 20px;
+  color: #333;
 }
 
-button:hover {
-  background-color: #0056b3;
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
 }
 
-/* src/App.css */
-.client-name-button {
-  background: none;
-  border: none;
-  color: blue;
-  text-decoration: underline;
-  cursor: pointer;
+/* Add a custom scroll bar */
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-.client-name-button:hover {
-  color: darkblue;
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #007bff;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0056b3;
+}
+
+/* Add transitions to modals */
+.modal-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-content.show {
+  transform: translateY(0);
+  opacity: 1;
 }

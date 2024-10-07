@@ -4,7 +4,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Clients from './pages/Clients';
 import Dashboard from './pages/Dashboard';
-import Rendezvous from './pages/Rendezvous';
+import ClientsVendus from './pages/ClientsVendus'; // Nouvelle page
+import Footer from './components/Footer'; // Importer le composant Footer
 import './App.css';
 
 function App() {
@@ -14,25 +15,47 @@ function App() {
       dateEntree: '2024-09-01',
       dateDecision: '2024-09-15',
       budget: 10000,
-      statut: 'en cours',
-      notes: 'Premier client.',
-    },
-    {
-      nom: 'Martin',
-      dateEntree: '2024-09-05',
-      dateDecision: '2024-09-20',
-      budget: 7500,
       statut: 'vendu',
-      notes: 'Commande en cours.',
+      notes: 'Premier client.',
+      pvHorsTaxes: 9000,
+      tva: 20,
+      prixPose: 500,
+      prixLivraison: 300,
+      dateLivraison: '2024-09-20',
+      datePose: '2024-09-22',
+      montantPoseur: 400,
     },
     {
-      nom: 'Durand',
-      dateEntree: '2024-10-10',
-      dateDecision: '2024-10-25',
-      budget: 5000,
-      statut: 'perdu',
-      notes: 'Pas intéressé.',
+      nom: 'Automne',
+      dateEntree: '2024-08-01',
+      dateDecision: '2024-11-15',
+      budget: 8000,
+      statut: 'vendu',
+      notes: 'Premier client.',
+      pvHorsTaxes: 9000,
+      tva: 20,
+      prixPose: 500,
+      prixLivraison: 300,
+      dateLivraison: '2024-09-20',
+      datePose: '2024-09-22',
+      montantPoseur: 400,
     },
+    {
+      nom: 'glize',
+      dateEntree: '2024-09-20',
+      dateDecision: '2024-10-15',
+      budget: 10000,
+      statut: 'vendu',
+      notes: 'Premier client.',
+      pvHorsTaxes: 9000,
+      tva: 20,
+      prixPose: 500,
+      prixLivraison: 300,
+      dateLivraison: '2024-09-20',
+      datePose: '2024-09-22',
+      montantPoseur: 400,
+    },
+    // Ajoutez d'autres clients si nécessaire
   ]);
 
   // Fonction pour ajouter un nouveau client
@@ -59,22 +82,33 @@ function App() {
   return (
     <Router>
       <div className="App">
+        {/* Navbar */}
         <Navbar />
-        <Routes>
-          <Route
-            path="/clients"
-            element={
-              <Clients
-                clients={clients}
-                onAddClient={handleAddClient}
-                onUpdateClient={handleUpdateClient}
-                onDeleteClient={handleDeleteClient}
-              />
-            }
-          />
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/rendezvous" element={<Rendezvous />} />
-        </Routes>
+
+        {/* Contenu principal */}
+        <div className="main-content">
+          <Routes>
+            <Route
+              path="/clients"
+              element={
+                <Clients
+                  clients={clients}
+                  onAddClient={handleAddClient}
+                  onUpdateClient={handleUpdateClient}
+                  onDeleteClient={handleDeleteClient}
+                />
+              }
+            />
+            <Route path="/" element={<Dashboard />} />
+            <Route
+              path="/clients-vendus"
+              element={<ClientsVendus clients={clients} />}
+            />
+          </Routes>
+        </div>
+
+        {/* Footer */}
+        <Footer />
       </div>
     </Router>
   );

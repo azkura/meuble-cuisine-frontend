@@ -1,0 +1,27 @@
+/* src/components/StatusSelector.css */
+.status-selector {
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Couleur pour le statut "en cours" */
+.status-in-progress {
+  background-color: #add8e6; /* Bleu clair */
+  color: #000;
+}
+
+/* Couleur pour le statut "vendu" */
+.status-sold {
+  background-color: #90ee90; /* Vert clair */
+  color: #000;
+}
+
+/* Couleur pour le statut "perdu" */
+.status-lost {
+  background-color: #f08080; /* Rouge clair */
+  color: #000;
+}

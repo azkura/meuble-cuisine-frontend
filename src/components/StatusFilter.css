@@ -1,0 +1,10 @@
+/* src/components/StatusFilter.css */
+.status-filter-select {
+    padding: 5px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%; /* S'adapte à la largeur du parent */
+    box-sizing: border-box;
+  }
+  

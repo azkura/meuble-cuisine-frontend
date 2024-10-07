@@ -1,0 +1,33 @@
+/* src/components/Controls.css */
+.controls-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.control-item {
+  padding: 5px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.control-item.active-sort {
+  font-weight: bold;
+  color: #4CAF50; /* Indicateur de tri actif */
+}
+
+.new-client-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.new-client-button:hover {
+  background-color: #45a049;
+}

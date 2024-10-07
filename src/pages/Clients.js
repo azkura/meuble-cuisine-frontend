@@ -1,246 +1,144 @@
 // src/pages/Clients.js
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Modal from '../components/Modal';
+import Controls from '../components/Controls';
+import ClientTable from '../components/ClientTable'; 
+import NewClient from '../components/NewClient';
+import SaleForm from '../components/SaleForm';
+import ClientNotes from '../components/ClientNotes';
+import { filterClients, sortClients } from '../utils';
+import './Clients.css';
 
 function Clients({ clients, onUpdateClient, onDeleteClient, onAddClient }) {
-  const [showModal, setShowModal] = useState(false); // État pour gérer l'ouverture de la modale d'ajout de client
-  const [newClient, setNewClient] = useState({
-    nom: '',
-    dateEntree: '',
-    dateDecision: '',
-    budget: '',
-    notes: '',
-  });
-  const [showNotesModal, setShowNotesModal] = useState(false); // État pour gérer l'ouverture de la modale des notes
-  const [selectedClientNotes, setSelectedClientNotes] = useState(''); // Stocker les notes du client sélectionné
-
+  const [modalType, setModalType] = useState('');
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState('');
   const [sortCriteria, setSortCriteria] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
 
-  // Fonction pour déterminer la couleur de fond en fonction du statut
-  const getRowBackgroundColor = (statut) => {
-    switch (statut) {
-      case 'en cours':
-        return '#e6f7ff';
-      case 'vendu':
-        return '#e6ffe6';
-      case 'perdu':
-        return '#ffe6e6';
-      default:
-        return 'white';
-    }
-  };
+  // Gérer l'ouverture de la modal
+  const openModal = useCallback((type, client = null) => {
+    setModalType(type);
+    setSelectedClient(client);
+    setIsModalOpen(true);
+  }, []);
 
-  // Fonction pour changer la couleur du budget
-  const getBudgetColor = (budget) => {
-    if (budget > 10000) {
-      return 'red';
-    } else if (budget >= 8000) {
-      return 'green';
-    } else {
-      return 'orange';
-    }
-  };
+  // Gérer la fermeture de la modal
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedClient(null);
+  }, []);
 
-  // Gérer l'ajout d'un nouveau client
-  const handleAddClient = () => {
-    if (newClient.nom && newClient.dateEntree && newClient.dateDecision && newClient.budget) {
-      onAddClient({ ...newClient, statut: 'en cours' });
-      setShowModal(false);
-      setNewClient({ nom: '', dateEntree: '', dateDecision: '', budget: '', notes: '' });
-    } else {
-      alert('Veuillez remplir tous les champs.');
-    }
-  };
-
-  // Gérer les changements dans le formulaire d'ajout
-  const handleNewClientChange = (e) => {
+  // Gérer les changements dans les formulaires de la modal
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setNewClient((prevClient) => ({
+    setSelectedClient((prevClient) => ({
       ...prevClient,
       [name]: value,
     }));
   };
 
-  // Ouvrir la modale des notes
-  const handleShowNotes = (notes) => {
-    setSelectedClientNotes(notes);
-    setShowNotesModal(true);
-  };
-
-  // Filtrer et trier les clients
-  const getMonthFromDate = (date) => new Date(date).getMonth() + 1;
-  const filteredClients = clients.filter((client) => {
-    if (selectedMonth === '') return true;
-    return getMonthFromDate(client.dateEntree) === parseInt(selectedMonth, 10);
-  });
-  const sortedClients = filteredClients.sort((a, b) => {
-    let comparison = 0;
-    switch (sortCriteria) {
-      case 'nom':
-        comparison = a.nom.localeCompare(b.nom);
-        break;
-      case 'dateEntree':
-        comparison = new Date(a.dateEntree) - new Date(b.dateEntree);
-        break;
-      case 'dateDecision':
-        comparison = new Date(a.dateDecision) - new Date(b.dateDecision);
-        break;
-      case 'budget':
-        comparison = a.budget - b.budget;
-        break;
-      default:
-        break;
+  // Gérer le changement de statut
+  const handleStatusChange = useCallback((client, newStatus) => {
+    const updatedClient = { ...client, statut: newStatus };
+    onUpdateClient(updatedClient);
+    if (newStatus === 'vendu') {
+      openModal('sale', client);
     }
-    return sortOrder === 'asc' ? comparison : -comparison;
-  });
+  }, [onUpdateClient, openModal]);
 
-  // Calculer le nombre total de clients et le budget total
-  const totalClients = filteredClients.length;
-  const totalBudget = filteredClients.reduce((sum, client) => sum + Number(client.budget), 0);
+  // Gérer l'envoi du formulaire
+  const handleSubmit = useCallback(() => {
+    if (modalType === 'sale') {
+      const updatedClient = {
+        ...selectedClient,
+        statut: 'vendu',
+        pvttc: selectedClient.pvHorsTaxes ? selectedClient.pvHorsTaxes * (1 + selectedClient.tva / 100) : 0,
+      };
+      onUpdateClient(updatedClient);
+    }
+    closeModal();
+  }, [modalType, selectedClient, onUpdateClient, closeModal]);
+
+  // Gérer la suppression du client
+  const handleDelete = useCallback((client) => {
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer le client ${client.nom} ?`)) {
+      onDeleteClient(client);
+      toast.success(`Le client ${client.nom} a été supprimé.`);
+    }
+  }, [onDeleteClient]);
+
+  // Filtrer les clients par mois et statut
+  const filteredClients = useMemo(() => filterClients(clients, selectedMonth, selectedStatus), [clients, selectedMonth, selectedStatus]);
+
+  // Trier les clients
+  const sortedClients = useMemo(() => sortClients(filteredClients, sortCriteria, sortOrder), [filteredClients, sortCriteria, sortOrder]);
 
   return (
-    <div>
+    <div className="container">
       <h1>Liste des Clients</h1>
 
-      {/* Bouton pour ouvrir la modale d'ajout de client */}
-      <button onClick={() => setShowModal(true)}>Nouveau Client</button>
+      {/* Utiliser le composant ToastContainer */}
+      <ToastContainer />
 
-      {/* Sélecteurs de tri et de filtre */}
-      <div className="sorting-controls">
-        <select onChange={(e) => setSortCriteria(e.target.value)} value={sortCriteria}>
-          <option value="">Trier par...</option>
-          <option value="nom">Nom</option>
-          <option value="dateEntree">Date d'entrée</option>
-          <option value="dateDecision">Date de décision</option>
-          <option value="budget">Budget</option>
-        </select>
-        <select onChange={(e) => setSortOrder(e.target.value)} value={sortOrder}>
-          <option value="asc">Croissant</option>
-          <option value="desc">Décroissant</option>
-        </select>
-        <select onChange={(e) => setSelectedMonth(e.target.value)} value={selectedMonth}>
-          <option value="">Filtrer par mois...</option>
-          <option value="1">Janvier</option>
-          <option value="2">Février</option>
-          <option value="3">Mars</option>
-          <option value="4">Avril</option>
-          <option value="5">Mai</option>
-          <option value="6">Juin</option>
-          <option value="7">Juillet</option>
-          <option value="8">Août</option>
-          <option value="9">Septembre</option>
-          <option value="10">Octobre</option>
-          <option value="11">Novembre</option>
-          <option value="12">Décembre</option>
-        </select>
-      </div>
+      {/* Utiliser le composant Controls */}
+      <Controls
+        selectedMonth={selectedMonth}
+        onMonthChange={setSelectedMonth}
+        sortCriteria={sortCriteria}
+        sortOrder={sortOrder}
+        onSortChange={setSortCriteria}
+        onOrderChange={setSortOrder}
+        onNewClient={() => openModal('new')}
+        selectedStatus={selectedStatus}
+        onStatusChange={setSelectedStatus}
+      />
 
       {/* Tableau des clients */}
-      <table>
-        <thead>
-          <tr>
-            <th>N°</th>
-            <th>Nom</th>
-            <th>Date d'entrée</th>
-            <th>Date de décision</th>
-            <th>Budget (€)</th>
-            <th>Statut</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedClients.map((client, index) => (
-            <tr key={index} style={{ backgroundColor: getRowBackgroundColor(client.statut) }}>
-              <td>{index + 1}</td>
-              <td>
-                <button className="client-name-button" onClick={() => handleShowNotes(client.notes)}>
-                  {client.nom}
-                </button>
-              </td>
-              <td>{client.dateEntree}</td>
-              <td>{client.dateDecision}</td>
-              <td style={{ color: getBudgetColor(client.budget) }}>{client.budget}</td>
-              <td>
-                <select
-                  name="statut"
-                  value={client.statut}
-                  onChange={(e) =>
-                    onUpdateClient({ ...client, statut: e.target.value })
-                  }
-                >
-                  <option value="en cours">En cours</option>
-                  <option value="vendu">Vendu</option>
-                  <option value="perdu">Perdu</option>
-                </select>
-              </td>
-              <td>
-                <button onClick={() => onDeleteClient(client)}>Supprimer</button>
-              </td>
-            </tr>
-          ))}
-          {/* Ligne pour le total des clients et du budget */}
-          <tr style={{ backgroundColor: '#d9d9d9' }}> {/* Gris légèrement foncé */}
-            <td colSpan="4"><strong>Total</strong></td>
-            <td><strong>{totalBudget} €</strong></td>
-            <td colSpan="2"><strong>Total Clients: {totalClients}</strong></td>
-          </tr>
-        </tbody>
-      </table>
+      <ClientTable
+        clients={sortedClients}
+        onStatusChange={handleStatusChange}
+        onEdit={(client) => openModal('edit', client)}
+        onDelete={handleDelete}
+        onOpenNotes={(client) => openModal('notes', client)}
+      />
 
-      {/* Modale d'ajout de nouveau client */}
-      {showModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Ajouter un Nouveau Client</h2>
-            <input
-              type="text"
-              name="nom"
-              value={newClient.nom}
-              onChange={handleNewClientChange}
-              placeholder="Nom"
-            />
-            <input
-              type="date"
-              name="dateEntree"
-              value={newClient.dateEntree}
-              onChange={handleNewClientChange}
-            />
-            <input
-              type="date"
-              name="dateDecision"
-              value={newClient.dateDecision}
-              onChange={handleNewClientChange}
-            />
-            <input
-              type="number"
-              name="budget"
-              value={newClient.budget}
-              onChange={handleNewClientChange}
-              placeholder="Budget (€)"
-            />
-            <textarea
-              name="notes"
-              value={newClient.notes}
-              onChange={handleNewClientChange}
-              placeholder="Notes"
-            ></textarea>
-            <button onClick={handleAddClient}>Ajouter Client</button>
-            <button onClick={() => setShowModal(false)}>Annuler</button>
-          </div>
-        </div>
-      )}
+      {/* Modale réutilisable */}
+      <Modal
+        title={
+          modalType === 'new'
+            ? 'Ajouter un Nouveau Client'
+            : modalType === 'edit'
+            ? 'Modifier le Client'
+            : modalType === 'notes'
+            ? 'Informations du Client'
+            : 'Informations de Vente'
+        }
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onSubmit={modalType === 'new' || modalType === 'edit' ? null : handleSubmit}
+      >
+        {(modalType === 'new' || modalType === 'edit') && (
+          <NewClient
+            onAddClient={onAddClient}
+            onUpdateClient={onUpdateClient}
+            onClose={closeModal}
+            client={modalType === 'edit' ? selectedClient : null}
+          />
+        )}
 
-      {/* Modale pour afficher les notes */}
-      {showNotesModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Notes du Client</h2>
-            <p>{selectedClientNotes}</p>
-            <button onClick={() => setShowNotesModal(false)}>Fermer</button>
-          </div>
-        </div>
-      )}
+        {modalType === 'notes' && selectedClient && (
+          <ClientNotes notes={selectedClient.notes} />
+        )}
+
+        {modalType === 'sale' && selectedClient && (
+          <SaleForm clientData={selectedClient} onChange={handleChange} />
+        )}
+      </Modal>
     </div>
   );
 }
