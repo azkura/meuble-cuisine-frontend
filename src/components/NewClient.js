@@ -1,84 +1,90 @@
 // src/components/NewClient.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './NewClient.css';
 
 function NewClient({ onAddClient, onUpdateClient, onClose, client }) {
-  const [clientData, setClientData] = useState({
+  const [formData, setFormData] = useState(client || {
     nom: '',
     dateEntree: '',
     dateDecision: '',
     budget: '',
     notes: '',
   });
+  const [errors, setErrors] = useState({});
 
-  // Initialiser les champs avec les données du client si nous sommes en mode modification
-  useEffect(() => {
-    if (client) {
-      setClientData(client);
-    }
-  }, [client]);
-
-  // Gérer les changements dans le formulaire
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setClientData((prevClient) => ({
-      ...prevClient,
-      [name]: value,
-    }));
+    setFormData({ ...formData, [name]: value });
   };
 
-  // Gérer la soumission du formulaire
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.nom) newErrors.nom = 'Le nom est obligatoire.';
+    if (!formData.dateEntree) newErrors.dateEntree = 'La date d\'entrée est obligatoire.';
+    if (!formData.budget || formData.budget <= 0) newErrors.budget = 'Le budget doit être supérieur à 0.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = () => {
-    if (clientData.nom) {
-      if (client) {
-        // Mode édition
-        onUpdateClient({ ...clientData, budget: parseFloat(clientData.budget) || 0 });
-      } else {
-        // Mode ajout
-        onAddClient({ ...clientData, statut: 'en cours', budget: parseFloat(clientData.budget) || 0 });
-      }
-      onClose(); // Fermer la modal après l'ajout ou la modification
+    if (!validateForm()) return;
+
+    if (client) {
+      onUpdateClient(formData);
+    } else {
+      onAddClient({ ...formData, statut: 'en cours' });
     }
+    onClose();
   };
 
   return (
     <div className="new-client-form">
-      <h2>{client ? 'Modifier le Client' : 'Ajouter un Nouveau Client'}</h2>
       <input
         type="text"
         name="nom"
-        value={clientData.nom}
+        value={formData.nom}
         onChange={handleChange}
         placeholder="Nom"
       />
+      {errors.nom && <p className="error">{errors.nom}</p>}
+      
       <input
         type="date"
         name="dateEntree"
-        value={clientData.dateEntree}
+        value={formData.dateEntree}
         onChange={handleChange}
         placeholder="Date d'entrée"
       />
+      {errors.dateEntree && <p className="error">{errors.dateEntree}</p>}
+
       <input
         type="date"
         name="dateDecision"
-        value={clientData.dateDecision}
+        value={formData.dateDecision}
         onChange={handleChange}
         placeholder="Date de décision"
       />
+
       <input
         type="number"
         name="budget"
-        value={clientData.budget}
+        value={formData.budget}
         onChange={handleChange}
         placeholder="Budget (€)"
       />
+      {errors.budget && <p className="error">{errors.budget}</p>}
+
       <textarea
         name="notes"
-        value={clientData.notes}
+        value={formData.notes}
         onChange={handleChange}
         placeholder="Notes"
       ></textarea>
-      <button onClick={handleSubmit}>{client ? 'Modifier Client' : 'Ajouter Client'}</button>
+
+      <div className="modal-footer">
+        <button className="confirm" onClick={handleSubmit}>Confirmer</button>
+        <button className="cancel" onClick={onClose}>Annuler</button>
+      </div>
     </div>
   );
 }

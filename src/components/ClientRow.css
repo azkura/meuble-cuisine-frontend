@@ -1,0 +1,22 @@
+/* src/components/ClientRow.css */
+.badge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    font-size: 0.9rem;
+    display: inline-block;
+    text-align: center;
+  }
+  
+  .badge-in-progress {
+    background-color: #2196F3; /* Bleu clair pour "En cours" */
+  }
+  
+  .badge-sold {
+    background-color: #4CAF50; /* Vert pour "Vendu" */
+  }
+  
+  .badge-lost {
+    background-color: #f44336; /* Rouge pour "Perdu" */
+  }
+  

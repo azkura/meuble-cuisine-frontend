@@ -1,0 +1,22 @@
+/* src/components/NewClient.css */
+.error {
+    color: #f44336;
+    font-size: 0.8rem;
+    margin-top: 5px;
+  }
+  
+  .new-client-form input,
+  .new-client-form textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  

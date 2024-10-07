@@ -51,6 +51,13 @@ function Clients({ clients, onUpdateClient, onDeleteClient, onAddClient }) {
     }
   }, [onUpdateClient, openModal]);
 
+  // Nouvelle fonction handleSaveSale pour gérer les informations de vente
+  const handleSaveSale = useCallback((updatedClient) => {
+    onUpdateClient(updatedClient);
+    toast.success(`Les informations de vente pour le client ${updatedClient.nom} ont été enregistrées.`);
+    closeModal();
+  }, [onUpdateClient, closeModal]);
+
   // Gérer l'envoi du formulaire
   const handleSubmit = useCallback(() => {
     if (modalType === 'sale') {
@@ -105,6 +112,7 @@ function Clients({ clients, onUpdateClient, onDeleteClient, onAddClient }) {
         onEdit={(client) => openModal('edit', client)}
         onDelete={handleDelete}
         onOpenNotes={(client) => openModal('notes', client)}
+        onSale={handleSaveSale} // Assurez-vous que cette fonction est correctement définie
       />
 
       {/* Modale réutilisable */}
